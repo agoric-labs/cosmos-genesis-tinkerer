@@ -20,3 +20,27 @@ jobs:
           -v ${{ github.workspace }}/scripts:/scripts:rw \
           --entrypoint '/scripts/state_sync.sh' \
           ghcr.io/agoric/agoric-sdk:38
+
+    - name: Run Export
+      run: |
+        docker run \
+            -v ${{ github.workspace }}/state/mainnet/agoric:/root/agoric:rw \
+            -v ${{ github.workspace }}/scripts:/scripts:rw \
+            --entrypoint '/scripts/export.sh' \
+            ghcr.io/agoric/agoric-sdk:38
+
+    - name: Run Tinkerer
+      run: |
+        docker run -it --entrypoint '/tinkerer/scripts/tinkerer.sh' \
+              -v ${{ github.workspace }}/state/mainfork:/state:rw \
+              -v ${{ github.workspace }}/state/mainnet/agoric/export:/export:rw \
+              -v ${{ github.workspace }}:/tinkerer:rw  \
+              --net=bridge ghcr.io/agoric/agoric-sdk:38
+
+    - name: Run Compress State
+      run: |
+        docker run \
+            -v $PWD/state/mainfork:/state:rw \
+            -v $PWD/scripts:/scripts:rw \
+            --entrypoint '/scripts/compress.sh' \
+            ghcr.io/agoric/agoric-sdk:38
