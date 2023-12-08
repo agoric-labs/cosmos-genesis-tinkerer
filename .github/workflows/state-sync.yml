@@ -3,8 +3,8 @@ name: Run State-Sync
 on: [push]  # or any other trigger you prefer
 
 jobs:
-  run-docker:
-    runs-on: ubuntu-latest
+  run-state-sync:
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
@@ -13,7 +13,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
-    - name: Run Docker container
+    - name: Run State-Sync
       run: |
         docker run \
           -v ${{ github.workspace }}/state/mainnet/agoric:/root/agoric:rw \
