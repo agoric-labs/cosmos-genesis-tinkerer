@@ -24,7 +24,10 @@ import shutil
 import subprocess
 import os
 import requests
+import re
 
+translate_table = str.maketrans({"-": r"\-", "]": r"\]", "\\": r"\\", "]": r"\]",
+                                 "^": r"\^", "$": r"\$", "*": r"\*", ".": r"\.", "/": r"\/"})
 
 class Validator:
     """
@@ -48,6 +51,7 @@ class Validator:
         self._pub = None
         self._oper_addr = None
         self._cons_addr = None
+        self._name = None
 
     @property
     def self_delegation_address(self):
@@ -115,6 +119,16 @@ class Validator:
     def consensus_address(self, addr):
         self._cons_addr = addr
 
+    @property
+    def name(self):
+        """
+        Getter function for name
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
 
 class Delegator:
     """
@@ -130,6 +144,7 @@ class Delegator:
         """
         self._addr = None
         self._pub = None
+        self._pub_obj = None
 
     @property
     def address(self):
@@ -153,6 +168,17 @@ class Delegator:
     def public_key(self, pub):
         self._pub = pub
 
+    @property
+    def pub_obj(self):
+        """
+        Getter function for pub_obj oject
+        """
+        return self._pub_obj
+
+    @pub_obj.setter
+    def pub_obj(self, _pub_obj):
+        self._pub_obj = _pub_obj
+
 
 class TinkerTaskList:
     """
@@ -163,7 +189,7 @@ class TinkerTaskList:
     """
     _bytes_tasks = []
     _json_tasks = []
-    _bytes_tasks_names = ('replace_validator', 'replace_delegator')
+    _bytes_tasks_names = ('replace_validator', 'replace_delegator', 'replace_account_address')
     _phase = 'bytes'
     _user_tasks = []
 
@@ -318,10 +344,12 @@ class GenesisTinker:  # pylint: disable=R0902,R0904
         self._task_list.clear()
 
         if self._phase == 'json':
+            print('Saving _phase == json... tinkered genesis to ' + self.output_file)
             self.save_file(self.output_file)
             content = self.generate_json()
             content_bytes = content.encode('utf-8')
         else:
+            print('Saving ..else... tinkered genesis to ' + self.preprocessing_file)
             shutil.copy2(self.preprocessing_file, self.output_file)
             with open(self.preprocessing_file, 'rb') as infile:
                 content_bytes = infile.read()
@@ -357,12 +385,13 @@ class GenesisTinker:  # pylint: disable=R0902,R0904
         properties = [prop for prop in dir(Delegator) if prop[0] != '_']
 
         for prop in properties:
-            subprocess.run([
-                'sed', '-i', 's%' +
-                getattr(old_delegator, prop) + '%' +
-                getattr(new_delegator, prop) + '%g',
-                self.preprocessing_file],
-                check=True)
+            if getattr(old_delegator, prop):
+                val = 's/' + getattr(old_delegator, prop).translate(translate_table) + '/' + getattr(new_delegator, prop).translate(translate_table) + '/g'
+                print('sed -i ' + val + ' ' + str(self.preprocessing_file))
+                subprocess.run([
+                    'sed', '-i', val,
+                    self.preprocessing_file],
+                    check=True)
 
     def replace_validator(self, old_validator: Validator, new_validator: Validator):
         """
@@ -380,14 +409,106 @@ class GenesisTinker:  # pylint: disable=R0902,R0904
 
         # Replace every property of the validator object
         properties = [prop for prop in dir(Validator) if prop[0] != '_']
-
+        
+        
         for prop in properties:
+            val = 's/' + getattr(old_validator, prop).translate(translate_table) + '/' + getattr(new_validator, prop).translate(translate_table) + '/g'
+            print('sed -i ' + val + ' ' + str(self.preprocessing_file))
             subprocess.run([
-                'sed', '-i', 's%' +
-                getattr(old_validator, prop) + '%' +
-                getattr(new_validator, prop) + '%g',
+                'sed', '-i', val,
                 self.preprocessing_file],
-                check=True)
+                check=True, capture_output=True)
+
+    def replace_account_address(self, old_account: Delegator, new_account: Delegator):
+        """
+        Replace an existing account with the specified one.
+        old_account and new_account must be account objects
+
+        This function will do a byte replacement on all instances of the old account data
+        and save the changes to the current pre_processing.json file.
+        """
+        if not self._preprocessing:
+            self.create_preprocessing_file()
+
+        self.log_step("Replacing account " + old_account['address'] +
+                      " with " + new_account.address)
+       
+        val = 's/' + old_account['address'].translate(translate_table) + '/' + new_account.address.translate(translate_table) + '/g'
+        print('sed -i ' + val + ' ' + str(self.preprocessing_file))
+        subprocess.run([
+            'sed', '-i', val,
+            self.preprocessing_file],
+            check=True, capture_output=True)
+    
+    def replace_auth_account(self, address, new_account, new_pub_obj):
+        """
+        Replace the public key of an account
+        """
+        for account in self.app_state["auth"]["accounts"]:
+            if 'address' in account:
+                if account['address'] == address:
+                    account['address'] = new_account
+                    account['pub_key'] = new_pub_obj
+                    break
+            elif 'base_account' in account:
+                if account['base_account']['address'] == address:
+                    account['base_account']['address'] = new_account
+                    account['base_account']['pub_key'] = new_pub_obj
+                    break
+
+    # def delete_transcripts(self):
+    #     """
+    #     Delete all transcripts from apps_state.swingset.swing_store_export_data[]
+    #     """
+    #     export_data = []
+    #     transcripts = {}
+    #     for transcript in self.app_state["swingset"]["swing_store_export_data"]:
+    #         if not transcript["key"].startswith("transcript.v"):
+    #             export_data.append(transcript)
+    #         else:
+    #             vat = transcript["key"].split(".")[1]
+    #             pos = transcript["key"].split(".")[2]
+    #             if pos == "current":
+    #                 export_data.append(transcript)
+    #             else:
+    #                 if vat in transcripts:
+    #                     old_pos = transcripts[vat]["pos"]
+    #                     if int(old_pos) < int(pos):
+    #                         transcripts[vat] = {"pos": pos, "artifact": transcript}
+    #                 else:
+    #                     transcripts[vat] = {"pos": pos, "artifact": transcript}
+
+
+    #     for transcript in transcripts:
+    #         export_data.append(transcripts[transcript]["artifact"])
+
+    #     self.app_state["swingset"]["swing_store_export_data"] = export_data
+
+    def get_accounts(self):
+        """
+        Get the list of accounts from the loaded genesis file
+        """
+        return self.app_state["auth"]["accounts"]
+
+    def filter_accounts(self, filter_accounts):
+        """
+        Filter accounts by address
+        """
+        print(type(self.app_state["auth"]["accounts"]))
+        
+        print(self.app_state["auth"]["accounts"][0]['address'])
+        final_accounts = []
+        for account in self.app_state["auth"]["accounts"]:
+            if 'address' in account:
+                if account['address'] not in filter_accounts:
+                    final_accounts.append(account)
+            elif 'base_account' in account:
+                if account['base_account']['address'] not in filter_accounts:
+                    final_accounts.append(account['base_account'])
+
+                
+        return final_accounts
+
 
     def load_file(self, path):
         """
@@ -559,7 +680,7 @@ class GenesisTinker:  # pylint: disable=R0902,R0904
 
         return self
 
-    def set_min_deposit(self, min_amount: str = "64000000", denom: str = "uatom"):
+    def set_min_deposit(self, min_amount: str = "64000000", denom: str = "ubld"):
         """
         Swap out the min deposit amount for governance.
         Creates a new amount if the denomination doesn't exist
@@ -630,7 +751,7 @@ class GenesisTinker:  # pylint: disable=R0902,R0904
                             key=lambda x: x['denom'])
         return self
 
-    def increase_supply(self, increase: int, denom="uatom"):
+    def increase_supply(self, increase: int, denom="ubld"):
         """
         Increase the total supply of coins of a given denomination
         """
@@ -653,10 +774,10 @@ class GenesisTinker:  # pylint: disable=R0902,R0904
 
         return self
 
-    def increase_balance(self, address: str, amount: int = 300000000, denom: str = 'uatom'):
+    def increase_balance(self, address: str, amount: int = 300000000, denom: str = 'ubld'):
         """
         Increases the balance of an account
-        and the overall supply of uatom by the same amount
+        and the overall supply of ubld by the same amount
         """
 
         self.log_step("Increasing balance of " + address +
@@ -762,7 +883,7 @@ class GenesisTinker:  # pylint: disable=R0902,R0904
 
         return self
 
-    def increase_validator_stake(self, operator_address: str, increase: int, denom: str = 'uatom'):
+    def increase_validator_stake(self, operator_address: str, increase: int, denom: str = 'ubld'):
         """
         Increases the stake of a validator as well as its delegator_shares
         """
