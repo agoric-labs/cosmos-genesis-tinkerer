@@ -13,12 +13,6 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
-    - name: Prepare files
-      run: |
-        cp -r ${{ github.workspace }}/state/mainnet/agoric/data/priv_validator_state.json ./priv_validator_state.json
-        rm -rf ${{ github.workspace }}/state/mainnet/agoric/data/*
-        mv ./priv_validator_state.json ${{ github.workspace }}/state/mainnet/agoric/data/priv_validator_state.json
-
     - name: Run Docker container
       run: |
         docker run \
