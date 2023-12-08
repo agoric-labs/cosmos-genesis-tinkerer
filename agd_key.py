@@ -51,5 +51,5 @@ class Key:
         return None       
 
     def add_genesis_account(self):
-        subprocess.run(agd + ["add-genesis-account", self.address, "5000000000000000ubld"],
+        subprocess.run(agd + ["add-genesis-account", self.address, "5000000000000000ubld,5000000000000000uist,5000000000000000ibc/toyusdc,1provisionpass"],
                                 check=True, capture_output=True, text=True)
