@@ -34,6 +34,12 @@ It will read the `fresh_genesis.json` file from the `tests` folder and generate 
 
 ## Usage
 
+
+### Agoric Genesis Tinkering
+Run the following script to fetch a latest height from mainnet, tinker it, and export it for creating mainforks.
+./scripts/run_all.sh
+
+
 Access full module documentation with `pydoc cosmos_genesis_tinker`.
 
 Example:
