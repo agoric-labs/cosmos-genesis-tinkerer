@@ -37,3 +37,5 @@ wget -O genesis.json https://snapshots.polkachu.com/genesis/agoric/genesis.json 
 mv genesis.json $AGORIC_HOME/config/
 
 agd start --home $AGORIC_HOME
+
+exit 0

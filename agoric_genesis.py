@@ -75,6 +75,14 @@ tinkerer.add_task(tinkerer.increase_delegator_stake_to_validator,
 tinkerer.add_task(tinkerer.set_voting_period,
                  voting_period='60s')
 
+tinkerer.add_task(tinkerer.set_min_deposit, min_amount='1')
+
+tinkerer.add_task(tinkerer.set_tally_param,
+                  parameter_name='quorum', value='0.000000000000000001')
+
+tinkerer.add_task(tinkerer.set_tally_param,
+                  parameter_name='threshold', value='0.000000000000000001')
+
 tinkerer.run_tasks()
 
 print(new_key)
