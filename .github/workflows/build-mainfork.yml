@@ -1,9 +1,16 @@
 name: Build Mainfork
 
-on: [push]  # or any other trigger you prefer
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * *' # Runs at 00:00 UTC every day
 
 jobs:
-  run-state-sync:
+  build_mainfork:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
     runs-on: self-hosted
 
     steps:
@@ -41,7 +48,18 @@ jobs:
     - name: Run Compress State
       run: |
         docker run \
-            -v $PWD/state/mainfork:/state:rw \
-            -v $PWD/scripts:/scripts:rw \
+            -v ${{ github.workspace }}/state/mainfork:/state:rw \
+            -v ${{ github.workspace }}/scripts:/scripts:rw \
             --entrypoint '/scripts/compress.sh' \
             ghcr.io/agoric/agoric-sdk:38
+
+    - name: Update permissions of the files created in the containers
+      run: |
+        sudo chown -R $(whoami):$(whoami) *
+
+    - id: 'upload-file'
+      uses: 'google-github-actions/upload-cloud-storage@v1'
+      with:
+        path: '${{ github.workspace }}/state'
+        destination: 'agoric-snapshots-public/mainfork-snapshots'
+        glob: '*.tar.gz'
