@@ -40,10 +40,10 @@ jobs:
     - name: Run Tinkerer
       run: |
         docker run -it --entrypoint '/tinkerer/scripts/tinkerer.sh' \
-              -v ${{ github.workspace }}/state/mainfork:/state:rw \
-              -v ${{ github.workspace }}/state/mainnet/agoric/export:/export:rw \
-              -v ${{ github.workspace }}:/tinkerer:rw  \
-              --net=bridge ghcr.io/agoric/agoric-sdk:38
+            -v ${{ github.workspace }}/state/mainfork:/state:rw \
+            -v ${{ github.workspace }}/state/mainnet/agoric/export:/export:rw \
+            -v ${{ github.workspace }}:/tinkerer:rw  \
+            ghcr.io/agoric/agoric-sdk:38
 
     - name: Run Compress State
       run: |

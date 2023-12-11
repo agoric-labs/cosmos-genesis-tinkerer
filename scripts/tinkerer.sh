@@ -23,6 +23,7 @@ cd /tinkerer
 apt install -y python3-venv
 python3 -m venv .env
 source .env/bin/activate
+pip install -r requirements.txt
 python3 agoric_genesis.py
 
 # sed -i "s/\/usr\/src\/agoric-sdk\/packages\/vats\/modified-bootstrap.json/@agoric\/vats\/decentral-main-vaults-config.json/g" /state/agoric1/config/genesis.json

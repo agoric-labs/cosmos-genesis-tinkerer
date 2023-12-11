@@ -15,5 +15,5 @@ rm "agoric2-config-$height.tar.gz"
 rm "agoric-$height.tar.gz"
 
 tar -czf "agoric1-config-$height.tar.gz" --exclude="config/genesis*" --exclude="config/swing-store" -C agoric1 config data/priv_validator_state.json
-tar -czf "agoric2-config-$height.tar.gz" --exclude="config/genesis*" --exclude="config/swing-store" -C agoric2 config 
-tar -czf "agoric-$height.tar.gz" -C agoric1 config/genesis.json config/swing-store data keyring-test
+tar -czf "agoric2-config-$height.tar.gz" --exclude="config/genesis*" --exclude="config/swing-store" -C agoric2 config data/priv_validator_state.json
+tar -czf "agoric-$height.tar.gz" --exclude="data/priv_validator_state.json" -C agoric1 config/genesis.json config/swing-store data keyring-test

@@ -12,16 +12,14 @@ abandon abandon abandon abandon abandon abandon abandon art
 from cosmos_genesis_tinker import Delegator, Validator, GenesisTinker
 from agoric_constants import validator1, validator2, alt_validator1, alt_validator2, delegator1
 from agd_key import Key
-import subprocess
-import json
 
 GENESIS_PEER = "/state/agoric1/config/genesis.json"
+
+NEW_CHAIN_ID = 'agoric-mainfork-1'
 
 # Tokens configuration
 UBLD_STAKE_INCREASE = 500000000 * 10000000
 UBLD_LIQUID_TOKEN_INCREASE = 3 * UBLD_STAKE_INCREASE
-
-filter_address = [validator1.self_delegation_address, validator2.self_delegation_address, delegator1.address]
 
 print("Tinkering... ")
 
@@ -31,17 +29,8 @@ new_key.add_genesis_account()
 alt_delegator1 = Delegator()
 alt_delegator1.address = new_key.address
 alt_delegator1.public_key = new_key.public_key
-print(alt_delegator1)
-
-filter_address.append(alt_delegator1.address)
 
 tinkerer = GenesisTinker(input_file=GENESIS_PEER, output_file=GENESIS_PEER)
-tinkerer.auto_load()
-accounts = tinkerer.get_accounts()
-accounts = tinkerer.filter_accounts(filter_address)
-new_accounts = {}
-
-bonded_account = tinkerer.get_bonded_pool_address()
 
 tinkerer.add_task(tinkerer.replace_validator,
             old_validator=validator1,
@@ -54,6 +43,9 @@ tinkerer.add_task(tinkerer.replace_validator,
 tinkerer.add_task(tinkerer.replace_delegator,
             old_delegator=delegator1,
             new_delegator=alt_delegator1)
+
+tinkerer.add_task(tinkerer.set_chain_id,
+                  chain_id=NEW_CHAIN_ID)
 
 tinkerer.add_task(tinkerer.increase_balance,
                  address=alt_delegator1.address,

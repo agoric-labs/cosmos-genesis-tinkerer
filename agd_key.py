@@ -20,7 +20,7 @@ class Key:
         output = subprocess.run(agd + ["keys",
                             "--keyring-backend=test", "add", name,
                             "--output", "json"],
-                            check=True, capture_output=True, text=True)
+                            check=True, stdout=subprocess.PIPE, text=True)
         new_key = json.loads(output.stdout)
         self.address = new_key['address']
         self.public_key = json.loads(new_key['pubkey'])['key']
@@ -33,12 +33,12 @@ class Key:
 
         output = subprocess.run(agd + ["keys", "parse", self.address,
                 "--output", "json"],
-                check=True, capture_output=True, text=True)
+                check=True, stdout=subprocess.PIPE, text=True)
         self.byte_address = json.loads(output.stdout)["bytes"]
 
         output = subprocess.run(agd + ["keys", "parse", self.byte_address,
                                 "--output", "json"],
-                                check=True, capture_output=True, text=True)
+                                check=True, stdout=subprocess.PIPE, text=True)
         self.formats = json.loads(output.stdout)["formats"]
 
     def __str__(self):
@@ -52,4 +52,4 @@ class Key:
 
     def add_genesis_account(self):
         subprocess.run(agd + ["add-genesis-account", self.address, "5000000000000000ubld,5000000000000000uist,5000000000000000ibc/toyusdc,1provisionpass"],
-                                check=True, capture_output=True, text=True)
+                                check=True, text=True)
