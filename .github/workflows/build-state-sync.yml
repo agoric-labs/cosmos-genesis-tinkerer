@@ -1,4 +1,4 @@
-name: Build Mainfork
+name: Create State Sync Snapshot
 
 on:
   push:
@@ -6,12 +6,12 @@ on:
     - cron: '0 0 * * *' # Runs at 00:00 UTC every day
 
 jobs:
-  build_mainfork:
+  state-sync:
     permissions:
       contents: 'read'
       id-token: 'write'
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -28,38 +28,6 @@ jobs:
           -v ${{ github.workspace }}/scripts:/scripts:rw \
           --entrypoint '/scripts/state_sync.sh' \
           ghcr.io/agoric/agoric-sdk:38
-
-    - name: Run Export
-      run: |
-        docker run \
-            -v ${{ github.workspace }}/state/mainnet/agoric:/root/agoric:rw \
-            -v ${{ github.workspace }}/scripts:/scripts:rw \
-            --entrypoint '/scripts/export.sh' \
-            ghcr.io/agoric/agoric-sdk:38
-
-    - name: Run Tinkerer
-      run: |
-        docker run -it --entrypoint '/tinkerer/scripts/tinkerer.sh' \
-            -v ${{ github.workspace }}/state/mainfork:/state:rw \
-            -v ${{ github.workspace }}/state/mainnet/agoric/export:/export:rw \
-            -v ${{ github.workspace }}:/tinkerer:rw  \
-            ghcr.io/agoric/agoric-sdk:38
-
-    - name: Run Import
-      run: |
-        ./scripts/run_import.sh
-
-    - name: Run Compress State
-      run: |
-        docker run \
-            -v ${{ github.workspace }}/state/mainfork:/state:rw \
-            -v ${{ github.workspace }}/scripts:/scripts:rw \
-            --entrypoint '/scripts/compress.sh' \
-            ghcr.io/agoric/agoric-sdk:38
-
-    - name: Update permissions of the files created in the containers
-      run: |
-        sudo chown -R $(whoami):$(whoami) *
 
     - id: 'upload-file'
       uses: 'google-github-actions/upload-cloud-storage@v1'
