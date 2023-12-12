@@ -55,21 +55,10 @@ docker kill agoric2
 docker rm agoric1
 docker rm agoric2
 
-docker run --name agoric1 -d -v $PWD/state/mainfork:/state:rw -v --net=forknet --ip 10.99.0.2 ghcr.io/agoric/agoric-sdk:36 start --home /state/agoric1 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
-docker run --name agoric2 -d -v $PWD/state/mainfork:/state:rw -v --net=forknet --ip 10.99.0.3 ghcr.io/agoric/agoric-sdk:36 start --home /state/agoric2 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
+docker run --name agoric1 -d --mount type=tmpfs,destination=/tmp -v $PWD/state/mainfork:/state:rw -v --net=forknet --ip 10.99.0.2 ghcr.io/agoric/agoric-sdk:38 start --home /state/agoric1 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
+docker run --name agoric2 -d --mount type=tmpfs,destination=/tmp -v $PWD/state/mainfork:/state:rw -v --net=forknet --ip 10.99.0.3 ghcr.io/agoric/agoric-sdk:38 start --home /state/agoric2 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
 
-waitForBlock 5
-height=$(wait_for_bootstrap)
+docker wait agoric1
+docker wait agoric2
 
-docker kill agoric1
-docker kill agoric2
-
-
-# tar -czf agoric2-config-$height.tar.gz --exclude='config/genesis*' --exclude='config/swing-store' -C agoric2 config data/priv_validator_state.json
-# tar -czf agoric-$height.tar.gz -C agoric1 config/genesis.json data keyring-test
-
-# Compress things for upload
-#docker run -it --entrypoint '/cosmos-genesis-tinkerer/compress.sh' \
-#           -v /Users/touseefliaqat/code/state:/state:rw \
-#           -v /Users/touseefliaqat/code/state/cosmos-genesis-tinkerer:/cosmos-genesis-tinkerer:rw  \
-#           --net=bridge ghcr.io/agoric/agoric-sdk:36 $height
+docker logs agoric1
