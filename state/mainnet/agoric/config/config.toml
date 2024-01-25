@@ -228,7 +228,7 @@ addr_book_strict = true
 max_num_inbound_peers = 40
 
 # Maximum number of outbound peers to connect to, excluding persistent peers
-max_num_outbound_peers = 50
+max_num_outbound_peers = 40
 
 # List of node IDs, to which a connection will be (re)established ignoring any existing limits
 unconditional_peer_ids = ""
@@ -340,8 +340,8 @@ enable = true
 # For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
 # weeks) during which they can be financially punished (slashed) for misbehavior.
 rpc_servers = "https://agoric-rpc.polkachu.com:443,https://agoric-rpc.polkachu.com:443"
-trust_height = 12806128
-trust_hash = "D14A87E860E5399E94D76ED4F7C113CE37CEFA2FE82793C67B4E3F06AA1FAC94"
+trust_height = 13487995
+trust_hash = "7922AEE44D41F8CFA94A805AC4DC1AAE0F41D0A6246807D0B3B8F703CD71041E"
 trust_period = "168h0m0s"
 
 # Time to spend discovering snapshots before initiating a restore.

@@ -2,8 +2,10 @@
 set -x
 set +e
 
+source $PWD/scripts/constants.sh
+
 docker run \
     -v $PWD/state/mainnet/agoric:/root/agoric:rw \
     -v $PWD/scripts:/scripts:rw \
     --entrypoint '/scripts/export.sh' \
-    ghcr.io/agoric/agoric-sdk:38
+    $AGORIC_DOCKER_IMAGE

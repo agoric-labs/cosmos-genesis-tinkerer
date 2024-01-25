@@ -5,7 +5,7 @@ set +e
 source $PWD/scripts/constants.sh
 
 docker run \
-    -v $PWD/state/mainfork:/state:rw \
+    -v $PWD/state/mainnet/agoric:/root/agoric:rw \
     -v $PWD/scripts:/scripts:rw \
-    --entrypoint '/scripts/compress.sh' \
+    --entrypoint '/scripts/snapshot_starter.sh' \
     $AGORIC_DOCKER_IMAGE

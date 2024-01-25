@@ -2,6 +2,8 @@
 set -x
 set +e
 
+source $PWD/scripts/constants.sh
+
 wait_for_bootstrap() {
   endpoint="localhost"
   while true; do
@@ -55,8 +57,8 @@ docker kill agoric2
 docker rm agoric1
 docker rm agoric2
 
-docker run --name agoric1 -d --mount type=tmpfs,destination=/tmp -v $PWD/state/mainfork:/state:rw -v --net=forknet --ip 10.99.0.2 ghcr.io/agoric/agoric-sdk:38 start --home /state/agoric1 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
-docker run --name agoric2 -d --mount type=tmpfs,destination=/tmp -v $PWD/state/mainfork:/state:rw -v --net=forknet --ip 10.99.0.3 ghcr.io/agoric/agoric-sdk:38 start --home /state/agoric2 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
+docker run --name agoric1 -d --mount type=tmpfs,destination=/tmp -v $PWD/state/mainfork:/state:rw -v --net=forknet --ip 10.99.0.2 $AGORIC_DOCKER_IMAGE start --home /state/agoric1 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
+docker run --name agoric2 -d --mount type=tmpfs,destination=/tmp -v $PWD/state/mainfork:/state:rw -v --net=forknet --ip 10.99.0.3 $AGORIC_DOCKER_IMAGE start --home /state/agoric2 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
 
 docker wait agoric1
 docker wait agoric2
