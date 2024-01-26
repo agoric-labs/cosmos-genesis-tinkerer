@@ -1,3 +1,19 @@
+# Agoric mainnet fork maker
+
+This repo is forked from [hyphacoop/cosmos-genesis-tinkerer](https://github.com/hyphacoop/cosmos-genesis-tinkerer) and added agoric specific scripts to create a mainnet fork snapshot from the latest mainnet height ready for deployment.
+
+The Python code to tinker with the genesis file is in `agoric_genesis.py`. The `scripts` folder contains scripts to do the following.
+
+1. Create a new mainnet follower using state-sync.
+2. Export a genesis file from the follower's state.
+3. Tinker the exported genesis file for two mainfork validators.
+4. Export the artifacts for creating mainfork cluster.
+
+Run the following script to perform all these steps.
+```bash
+./scripts/run_all.sh
+```
+
 # Cosmos Genesis Tinker
 
 A Python module for modifying Cosmos genesis files.
@@ -33,12 +49,6 @@ You can run an example genesis tinker file like this:
 It will read the `fresh_genesis.json` file from the `tests` folder and generate `tinkered_genesis.json`.
 
 ## Usage
-
-
-### Agoric Genesis Tinkering
-Run the following script to fetch a latest height from mainnet, tinker it, and export it for creating mainforks.
-./scripts/run_all.sh
-
 
 Access full module documentation with `pydoc cosmos_genesis_tinker`.
 
