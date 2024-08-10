@@ -54,12 +54,12 @@ fi
 docker run -it --entrypoint '/cosmos-genesis-tinkerer/entrypoint.sh' \
            -v /Users/touseefliaqat/code/state:/state:rw \
            -v /Users/touseefliaqat/code/state/cosmos-genesis-tinkerer:/cosmos-genesis-tinkerer:rw  \
-           --net=bridge ghcr.io/agoric/agoric-sdk:36
+           --net=bridge ghcr.io/agoric/agoric-sdk:47
 
 
-docker run --name agoric1 -d -it --entrypoint 'agd start --home /state/agoric1 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false' -v /Users/touseefliaqat/code/state:/state:rw -v /Users/touseefliaqat/code/rehearsal/scripts:/state/scripts:rw --net=mainfork_validator_network ghcr.io/agoric/agoric-sdk:36
+docker run --name agoric1 -d -it --entrypoint 'agd start --home /state/agoric1 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false' -v /Users/touseefliaqat/code/state:/state:rw -v /Users/touseefliaqat/code/rehearsal/scripts:/state/scripts:rw --net=mainfork_validator_network ghcr.io/agoric/agoric-sdk:47
 
-docker run --name agoric2 -d -it --entrypoint 'agd start --home /state/agoric2 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false' -v /Users/touseefliaqat/code/state:/state:rw -v /Users/touseefliaqat/code/rehearsal/scripts:/state/scripts:rw --net=mainfork_validator_network ghcr.io/agoric/agoric-sdk:36
+docker run --name agoric2 -d -it --entrypoint 'agd start --home /state/agoric2 --x-crisis-skip-assert-invariants --iavl-disable-fastnode false' -v /Users/touseefliaqat/code/state:/state:rw -v /Users/touseefliaqat/code/rehearsal/scripts:/state/scripts:rw --net=mainfork_validator_network ghcr.io/agoric/agoric-sdk:47
 
 waitForBlock
 height=$(wait_for_bootstrap)

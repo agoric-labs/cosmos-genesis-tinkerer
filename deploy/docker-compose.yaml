@@ -45,7 +45,7 @@ services:
           memory: 16G
 
   validator1:
-    image: ghcr.io/agoric/agoric-sdk:36
+    image: ghcr.io/agoric/agoric-sdk:47
     depends_on:
       - initializer
     volumes:
@@ -71,7 +71,7 @@ services:
           memory: 16G
 
   validator2:
-    image: ghcr.io/agoric/agoric-sdk:36
+    image: ghcr.io/agoric/agoric-sdk:47
     depends_on:
       - initializer
     volumes:

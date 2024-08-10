@@ -21,7 +21,7 @@ rm -rf $AGORIC_HOME/data/*
 cd $AGORIC_HOME
 agd tendermint unsafe-reset-all --home $AGORIC_HOME
 
-# axel --quiet -n 10 -o "$SNAPHSOT_FILE" "$SNAPHSOT_BASE/$SNAPHSOT_FILE"
+axel --quiet -n 10 -o "$SNAPHSOT_FILE" "$SNAPHSOT_BASE/$SNAPHSOT_FILE"
 lz4 -c -d "$SNAPHSOT_FILE"  | tar -x -C $AGORIC_HOME
 
 cp $AGORIC_HOME/priv_validator_state.json  $AGORIC_HOME/data/priv_validator_state.json

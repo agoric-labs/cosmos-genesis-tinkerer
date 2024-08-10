@@ -13,6 +13,9 @@ jobs:
 
     runs-on: self-hosted
 
+    env:
+      DOCKER_IMAGE_TAG: '47'
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -27,7 +30,7 @@ jobs:
           -v ${{ github.workspace }}/state/mainnet/agoric:/root/agoric:rw \
           -v ${{ github.workspace }}/scripts:/scripts:rw \
           --entrypoint '/scripts/state_sync.sh' \
-          ghcr.io/agoric/agoric-sdk:38
+          ghcr.io/agoric/agoric-sdk:${{ env.DOCKER_IMAGE_TAG }}
 
     - name: Run Export
       run: |
@@ -35,7 +38,7 @@ jobs:
             -v ${{ github.workspace }}/state/mainnet/agoric:/root/agoric:rw \
             -v ${{ github.workspace }}/scripts:/scripts:rw \
             --entrypoint '/scripts/export.sh' \
-            ghcr.io/agoric/agoric-sdk:38
+            ghcr.io/agoric/agoric-sdk:${{ env.DOCKER_IMAGE_TAG }}
 
     - name: Run Tinkerer
       run: |
@@ -43,7 +46,7 @@ jobs:
             -v ${{ github.workspace }}/state/mainfork:/state:rw \
             -v ${{ github.workspace }}/state/mainnet/agoric/export:/export:rw \
             -v ${{ github.workspace }}:/tinkerer:rw  \
-            ghcr.io/agoric/agoric-sdk:38
+            ghcr.io/agoric/agoric-sdk:${{ env.DOCKER_IMAGE_TAG }}
 
     - name: Run Import
       run: |
@@ -55,7 +58,7 @@ jobs:
             -v ${{ github.workspace }}/state/mainfork:/state:rw \
             -v ${{ github.workspace }}/scripts:/scripts:rw \
             --entrypoint '/scripts/compress.sh' \
-            ghcr.io/agoric/agoric-sdk:38
+            ghcr.io/agoric/agoric-sdk:${{ env.DOCKER_IMAGE_TAG }}
 
     - name: Update permissions of the files created in the containers
       run: |

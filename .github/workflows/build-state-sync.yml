@@ -13,6 +13,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      DOCKER_IMAGE_TAG: '47'
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -27,7 +30,7 @@ jobs:
           -v ${{ github.workspace }}/state/mainnet/agoric:/root/agoric:rw \
           -v ${{ github.workspace }}/scripts:/scripts:rw \
           --entrypoint '/scripts/state_sync.sh' \
-          ghcr.io/agoric/agoric-sdk:38
+          ghcr.io/agoric/agoric-sdk:${{ env.DOCKER_IMAGE_TAG }}
 
     - id: 'upload-file'
       uses: 'google-github-actions/upload-cloud-storage@v1'
