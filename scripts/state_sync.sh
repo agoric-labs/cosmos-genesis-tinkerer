@@ -15,7 +15,7 @@ sed --version
 SNAP_RPC="https://agoric-rpc.polkachu.com:443"
 
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
-BLOCK_HEIGHT=$((LATEST_HEIGHT - 25000)); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 15000)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
 echo "Latest height"
