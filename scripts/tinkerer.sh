@@ -20,6 +20,7 @@ cp /export/genesis.json /state/agoric1/config/genesis.json
 cp -r /export/swing-store /state/agoric1/config/ &
 cp -r /export/swing-store /state/agoric2/config/ &
 
+apt-get update
 cd /tinkerer
 apt install -y python3-venv
 python3 -m venv .env
